@@ -1,0 +1,53 @@
+name:                atm-state-machine
+version:             0.1.0.0
+#synopsis:
+#description:
+homepage:            https://github.com/epoberezkin/atm-state-machine#readme
+license:             BSD3
+author:              Evgeny Poberezkin
+maintainer:          evgeny@poberezkin.com
+copyright:           2020 Evgeny Poberezkin
+category:            Web
+extra-source-files:
+- README.md
+
+default-extensions:
+  - BlockArguments
+  - DataKinds
+  - DeriveAnyClass
+  - EmptyCase
+  - FlexibleInstances
+  - GADTs
+  - InstanceSigs
+  - KindSignatures
+  - LambdaCase
+  - NoStarIsType
+  - PolyKinds
+  - RankNTypes
+  - ScopedTypeVariables
+  - StandaloneDeriving
+  - TemplateHaskell
+  - TypeApplications
+  - TypeFamilies
+  # - TypeInType
+  - TypeOperators
+  - TypeSynonymInstances
+  - UndecidableInstances
+
+ghc-options:
+  - -Wall
+  - -Wcompat
+  - -Worphans
+  - -Werror=incomplete-patterns
+  - -Wincomplete-record-updates
+  - -Werror=incomplete-uni-patterns
+  - -Wno-name-shadowing
+
+dependencies:
+  - base >= 4.7 && < 5
+  - singletons
+
+executables:
+  atm-state-machine:
+    source-dirs:      src
+    main:             Main.hs
