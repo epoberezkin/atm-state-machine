@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE LambdaCase #-}
@@ -36,49 +37,69 @@ $( singletons
 
 type PIN = String
 
-data ATMCmd a (s :: ATMState) (s' :: ATMState) :: Type where
-  InsertCard :: ATMCmd () Ready CardInserted
-  EjectCard :: ATMCmd () s Ready
-  GetPIN :: ATMCmd PIN CardInserted CardInserted
-  CheckPIN :: PIN -> ATMCmd PINCheck CardInserted CardInserted
-  StartSession :: Sing (p :: PINCheck) -> ATMCmd () CardInserted (PinCheckToState p)
-  GetAmount :: ATMCmd Int s s
-  Dispense :: Int -> ATMCmd () Session Session
-  Message :: String -> ATMCmd () s s
-  Return :: a -> ATMCmd a s s
-  (:>>=) :: ATMCmd a s1 s2 -> (a -> ATMCmd b s2 s3) -> ATMCmd b s1 s3
+type family HasCard (s :: ATMState) :: Constraint where
+  HasCard CardInserted = ()
+  HasCard Session = ()
 
-infixl 2 :>>=, >>:
+data ATMCmd (s :: ATMState) (s' :: ATMState) a :: Type where
+  InsertCard :: ATMCmd Ready CardInserted ()
+  EjectCard :: HasCard s => ATMCmd s Ready ()
+  GetPIN :: ATMCmd CardInserted CardInserted PIN
+  CheckPIN :: PIN -> ATMCmd CardInserted CardInserted PINCheck
+  StartSession :: SPINCheck p -> ATMCmd CardInserted (PinCheckToState p) ()
+  GetAmount :: HasCard s => ATMCmd s s Int
+  Dispense :: Int -> ATMCmd Session Session ()
+  Message :: String -> ATMCmd s s ()
+  Pure :: a -> ATMCmd s s a
+  (:>>=) :: ATMCmd s1 s2 a -> (a -> ATMCmd s2 s3 b) -> ATMCmd s1 s3 b
+  (:>>) :: ATMCmd s1 s2 () -> ATMCmd s2 s3 b -> ATMCmd s1 s3 b
 
-(>>:) :: ATMCmd () s1 s2 -> ATMCmd b s2 s3 -> ATMCmd b s1 s3
-c1 >>: c2 = c1 :>>= const c2
+infixl 2 :>>=, :>>
 
-atm :: ATMCmd () Ready Ready
+atm :: ATMCmd Ready Ready ()
 atm =
   InsertCard
-    >>: Message "Hello"
-    >>: GetPIN
+    :>> Message "Hello"
+    :>> GetPIN
     :>>= CheckPIN
-    :>>= \(FromSing ok) ->
+    :>>= session
+    :>> atm
+  where
+    session :: PINCheck -> ATMCmd CardInserted Ready ()
+    session (FromSing ok) =
       StartSession ok
-        >>: case ok of
+        :>> case ok of
           SCorrectPIN ->
             GetAmount
               :>>= Dispense
-              >>: EjectCard
-              >>: Message "Remove card and cash"
+              :>> EjectCard
+              :>> Message "Remove card and cash"
           SWrongPIN ->
-            EjectCard
-              >>: Message "Incorrect PIN"
+            Message "Incorrect PIN"
+              :>> EjectCard
 
-runATM :: ATMCmd a s1 s2 -> IO a
-runATM InsertCard = putStrLn "Insert card and press enter" >> void getLine
+runATM :: ATMCmd s1 s2 a -> IO a
+runATM InsertCard = putStrLn "Insert card (press enter)" >> void getLine
 runATM EjectCard = putStrLn "Card ejected"
 runATM GetPIN = putStrLn "Enter pin:" >> getLine
-runATM (CheckPIN pin) = return $ if pin == "1234" then CorrectPIN else WrongPIN
+runATM (CheckPIN pin) =
+  if pin == "1234"
+    then return CorrectPIN
+    else return WrongPIN
 runATM (StartSession _) = return ()
 runATM GetAmount = read <$> (putStrLn "Enter amount:" >> getLine) :: IO Int
 runATM (Dispense cash) = putStrLn $ "Here is " ++ show cash
 runATM (Message msg) = putStrLn msg
-runATM (Return res) = return res
+runATM (Pure res) = return res
 runATM (c :>>= f) = runATM c >>= \x -> runATM (f x)
+runATM (c :>> c') = runATM c >> runATM c'
+
+instance Functor (ATMCmd s s') where
+  fmap :: (a -> b) -> ATMCmd s s' a -> ATMCmd s s' b
+  fmap f c = c :>>= Pure . f
+
+instance Applicative (ATMCmd s s) where
+  pure :: a -> ATMCmd s s a
+  pure = Pure
+  (<*>) :: ATMCmd s s (a -> b) -> ATMCmd s s a -> ATMCmd s s b
+  cf <*> c = cf :>>= \f -> c :>>= \x -> pure (f x)
