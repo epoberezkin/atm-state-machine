@@ -1,6 +1,7 @@
 module Main where
 
-import ATM1
+import ATM
+import ATMCmd
 
 main :: IO ()
-main = runATM atm
+main = runATM atm'
