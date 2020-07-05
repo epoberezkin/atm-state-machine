@@ -9,19 +9,19 @@ module ATM where
 
 import ATMCmd
 import Data.Singletons
-import Prelude hiding ((>>), (>>=), fail)
+import Prelude hiding ((>>), (>>=))
 
 atm' :: ATMCmd Ready Ready ()
 atm' = do
   InsertCard
   Message "Hello"
   pin <- GetPIN
-  FromSing ok <- CheckPIN pin
+  ok <- CheckPIN pin
   session ok
   atm'
   where
-    session :: SPINCheck p -> ATMCmd CardInserted Ready ()
-    session ok = do
+    session :: PINCheck -> ATMCmd CardInserted Ready ()
+    session (FromSing ok) = do
       StartSession ok
       case ok of
         SCorrectPIN -> do
@@ -40,6 +40,3 @@ infixl 2 >>=, >>
 
 (>>=) :: ATMCmd s1 s2 a -> (a -> ATMCmd s2 s3 b) -> ATMCmd s1 s3 b
 (>>=) = (:>>=)
-
-fail :: String -> ATMCmd s s' a
-fail = error
