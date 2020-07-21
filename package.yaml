@@ -23,6 +23,7 @@ ghc-options:
 dependencies:
   - base >= 4.7 && < 5
   - singletons
+  - freer-indexed
 
 executables:
   atm-state-machine:

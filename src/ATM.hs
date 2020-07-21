@@ -8,35 +8,25 @@
 module ATM where
 
 import ATMCmd
+import Control.XMonad.Do
 import Data.Singletons
 import Prelude hiding ((>>), (>>=))
 
 atm' :: ATMCmd Ready Ready ()
 atm' = do
-  InsertCard
-  Message "Hello"
-  pin <- GetPIN
-  ok <- CheckPIN pin
-  session ok
-  atm'
-  where
-    session :: PINCheck -> ATMCmd CardInserted Ready ()
-    session (FromSing ok) = do
-      StartSession ok
+  insertCard
+  message "Hello"
+  pin <- getPIN
+  pinOK <- checkPIN pin
+  case pinOK of
+    FromSing ok -> do
+      startSession ok
       case ok of
         SCorrectPIN -> do
-          amount <- GetAmount
-          Dispense amount
-          EjectCard
-          Message "Remove card and cash"
+          amount <- getAmount
+          dispense amount
+          ejectCard
+          message "Remove card and cash"
         SWrongPIN -> do
-          Message "Incorrect PIN"
-          EjectCard
-
-infixl 2 >>=, >>
-
-(>>) :: ATMCmd s1 s2 () -> ATMCmd s2 s3 b -> ATMCmd s1 s3 b
-(>>) = (:>>)
-
-(>>=) :: ATMCmd s1 s2 a -> (a -> ATMCmd s2 s3 b) -> ATMCmd s1 s3 b
-(>>=) = (:>>=)
+          message "Incorrect PIN"
+          ejectCard

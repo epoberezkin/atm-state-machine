@@ -1,7 +1,8 @@
 module Main where
 
-import ATM
-import ATMCmd
+import ATM (atm')
+import ATMCmd (runATM)
+import Control.Monad (forever)
 
 main :: IO ()
-main = runATM atm'
+main = runATM (forever atm')

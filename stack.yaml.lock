@@ -3,7 +3,14 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    hackage: freer-indexed-0.1.0.0@sha256:b247be91b8ad2154fe1a514dec7c6a2553281d89325f0bc213d1d832d4c1a0e9,3007
+    pantry-tree:
+      size: 513
+      sha256: df32adf379be5a75e6abc32f76eebc6647e150066ce78ad120521fcafdcc44d6
+  original:
+    hackage: freer-indexed-0.1.0.0@sha256:b247be91b8ad2154fe1a514dec7c6a2553281d89325f0bc213d1d832d4c1a0e9,3007
 snapshots:
 - completed:
     size: 493124
