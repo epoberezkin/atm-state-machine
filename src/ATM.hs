@@ -24,7 +24,7 @@ atm' = do
       case ok of
         SCorrectPIN -> do
           amount <- getAmount
-          dispense amount
+          dispense amount -- this would fail to compile in SWrongPIN branch
           ejectCard
           message "Remove card and cash"
         SWrongPIN -> do
