@@ -1,32 +1,28 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE GADTs #-}
-{-# LANGUAGE RebindableSyntax #-}
-{-# OPTIONS_GHC -Werror=incomplete-patterns #-}
-{-# OPTIONS_GHC -fno-warn-unticked-promoted-constructors #-}
-{-# OPTIONS_GHC -fno-warn-unused-do-bind #-}
+{-# LANGUAGE QualifiedDo #-}
 
 module ATM where
 
 import ATMCmd
-import Control.XMonad.Do
+import qualified Control.XMonad.Do as X
 import Data.Singletons
-import Prelude hiding ((>>), (>>=))
 
-atm' :: ATMCmd Ready Ready ()
-atm' = do
+atm :: ATMCmd Ready Ready ()
+atm = X.do
   insertCard
   message "Hello"
   pin <- getPIN
   pinOK <- checkPIN pin
   case pinOK of
-    FromSing ok -> do
+    FromSing ok -> X.do
       startSession ok
       case ok of
-        SCorrectPIN -> do
+        SCorrectPIN -> X.do
           amount <- getAmount
           dispense amount -- this would fail to compile in SWrongPIN branch
           ejectCard
           message "Remove card and cash"
-        SWrongPIN -> do
+        SWrongPIN -> X.do
           message "Incorrect PIN"
           ejectCard
