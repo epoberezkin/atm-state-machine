@@ -23,11 +23,13 @@ Executable atm-state-machine
   Ghc-Options:          -Wall
                         -Wcompat
                         -Worphans
-                        -Wincomplete-patterns
+                        -Werror=incomplete-patterns
                         -Wincomplete-record-updates
-                        -Wincomplete-uni-patterns
+                        -Werror=incomplete-uni-patterns
                         -Wno-name-shadowing
-  Build-Depends:        base >=4.7 && <5
+  Build-Depends:        base ^>=4.17
                       , freer-indexed ^>=0.1.0.0
-                      , singletons >=2.6 && <3
-  Default-Language:     Haskell2010
+                      , singletons ^>=3.0
+                      , singletons-base ^>=3.1.1
+                      , singletons-th ^>=3.1.1
+  Default-Language:     GHC2021

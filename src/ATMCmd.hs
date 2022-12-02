@@ -5,12 +5,12 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE StandaloneKindSignatures #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wall #-}
+{-# OPTIONS_GHC -Werror=incomplete-patterns #-}
 {-# OPTIONS_GHC -fno-warn-unticked-promoted-constructors #-}
 
 module ATMCmd where
@@ -18,8 +18,8 @@ module ATMCmd where
 import Control.Monad (void)
 import Control.XFreer
 import Data.Kind
-import Data.Singletons ()
 import Data.Singletons.TH
+import Text.Show.Singletons
 
 $( singletons
      [d|
