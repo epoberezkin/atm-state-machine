@@ -9,9 +9,6 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
-{-# OPTIONS_GHC -Wall #-}
-{-# OPTIONS_GHC -Werror=incomplete-patterns #-}
-{-# OPTIONS_GHC -fno-warn-unticked-promoted-constructors #-}
 
 module ATMCmd where
 

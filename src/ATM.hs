@@ -1,9 +1,6 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE RebindableSyntax #-}
-{-# OPTIONS_GHC -Werror=incomplete-patterns #-}
-{-# OPTIONS_GHC -fno-warn-unticked-promoted-constructors #-}
-{-# OPTIONS_GHC -fno-warn-unused-do-bind #-}
 
 module ATM where
 
