@@ -11,8 +11,8 @@ import Control.XMonad.Do
 import Data.Singletons
 import Prelude hiding ((>>), (>>=))
 
-atm' :: ATMCmd Ready Ready ()
-atm' = do
+atm :: ATMCmd Ready Ready ()
+atm = do
   insertCard
   message "Hello"
   pin <- getPIN

@@ -17,7 +17,6 @@ module ATMCmd where
 
 import Control.Monad (void)
 import Control.XFreer
-import Control.XMonad
 import Data.Kind
 import Data.Singletons ()
 import Data.Singletons.TH
@@ -78,24 +77,6 @@ dispense = xfree . Dispense
 
 message :: String -> ATMCmd s s ()
 message = xfree . Message
-
-atm :: ATMCmd Ready Ready ()
-atm =
-  insertCard
-    >>: message "Hello"
-    >>: getPIN
-    >>=: checkPIN
-    >>=: \(FromSing ok) ->
-      startSession ok
-        >>: case ok of
-          SCorrectPIN ->
-            getAmount
-              >>=: dispense
-              >>: ejectCard
-              >>: message "Remove card and cash"
-          SWrongPIN ->
-            message "Incorrect PIN"
-              >>: ejectCard
 
 runATM :: ATMCmd s s' a -> IO a
 runATM (Pure x) = return x
