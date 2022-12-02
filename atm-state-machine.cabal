@@ -1,0 +1,33 @@
+Cabal-Version:  2.0
+Build-Type:     Simple
+
+Name:           atm-state-machine
+Version:        0.1.0.0
+
+Category:       Web
+Homepage:       https://github.com/epoberezkin/atm-state-machine#readme
+Author:         Evgeny Poberezkin
+Maintainer:     evgeny@poberezkin.com
+Copyright:      2020 Evgeny Poberezkin
+License:        BSD3
+License-File:   LICENSE
+
+Extra-Source-Files:
+    README.md
+
+Executable atm-state-machine
+  Hs-Source-Dirs:       src
+  Main-Is:              Main.hs
+  Other-Modules:        ATM
+                        ATMCmd
+  Ghc-Options:          -Wall
+                        -Wcompat
+                        -Worphans
+                        -Wincomplete-patterns
+                        -Wincomplete-record-updates
+                        -Wincomplete-uni-patterns
+                        -Wno-name-shadowing
+  Build-Depends:        base >=4.7 && <5
+                      , freer-indexed ^>=0.1.0.0
+                      , singletons >=2.6 && <3
+  Default-Language:     Haskell2010
